@@ -20,7 +20,7 @@ const schema = new mongoose.Schema({
     type: String,
     required: [true, "Please Enter Phone Number"],
     unique: [true, "Phone Number Already Exist"],
-    validate: validator.isMobilePhone,
+    // validate: validator.isMobilePhone,
   },
   password: {
     type: String,
