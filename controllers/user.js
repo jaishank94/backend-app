@@ -29,7 +29,18 @@ export const login = asyncError(async (req, res, next) => {
 });
 
 export const signup = asyncError(async (req, res, next) => {
-  const { name, email, password, address, city, country, pinCode } = req.body;
+  const {
+    name,
+    email,
+    phoneNumber,
+    password,
+    address,
+    city,
+    country,
+    pinCode,
+    agentCode,
+    profileType,
+  } = req.body;
 
   let user = await User.findOne({ email });
 
@@ -50,11 +61,14 @@ export const signup = asyncError(async (req, res, next) => {
     avatar,
     name,
     email,
+    phoneNumber,
     password,
     address,
     city,
     country,
     pinCode,
+    agentCode,
+    profileType,
   });
 
   sendToken(user, res, `Registered Successfully`, 201);
