@@ -46,12 +46,16 @@ const schema = new mongoose.Schema({
   },
   agentCode: {
     type: String,
-    required: false,
+  },
+  profileType: {
+    type: String,
+    enum: ["big", "local", "farmer"],
+    default: "local",
   },
   role: {
     type: String,
     enum: ["admin", "user"],
-    default: "admin",
+    default: "user",
   },
   avatar: {
     public_id: String,
