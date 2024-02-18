@@ -60,6 +60,9 @@ const schema = new mongoose.Schema({
   interests: {
     type: [String],
   },
+  tradeType: {
+    String,
+  },
   referralCode: {
     type: String,
   },

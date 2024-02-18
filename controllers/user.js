@@ -42,6 +42,7 @@ export const signup = asyncError(async (req, res, next) => {
     profileType,
     interests,
     referralCode,
+    tradeType,
   } = req.body;
 
   let user = await User.findOne({ email });
@@ -73,6 +74,7 @@ export const signup = asyncError(async (req, res, next) => {
     profileType,
     interests,
     referralCode,
+    tradeType,
   });
 
   sendToken(user, res, `Registered Successfully`, 201);

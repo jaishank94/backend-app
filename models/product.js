@@ -17,12 +17,18 @@ const schema = new mongoose.Schema({
     type: Number,
     required: [true, "Please Enter Stock"],
   },
-
+  tradeType: {
+    type: String,
+    required: [true, "Please Select Trade Type"],
+  },
   images: [{ public_id: String, url: String }],
-
   category: {
     type: mongoose.Schema.Types.ObjectId,
     ref: "Category",
+  },
+  createdBy: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: "User",
   },
   createdAt: {
     type: Date,

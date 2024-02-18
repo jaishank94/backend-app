@@ -11,6 +11,7 @@ import {
   getAllProducts,
   getProductDetails,
   updateProduct,
+  getRecommendations,
 } from "../controllers/product.js";
 import { isAuthenticated, isAdmin } from "../middlewares/auth.js";
 import { singleUpload } from "../middlewares/multer.js";
@@ -38,5 +39,7 @@ router.post("/category", isAuthenticated, isAdmin, addCategory);
 router.get("/categories", getAllCategories);
 
 router.delete("/category/:id", isAuthenticated, isAdmin, deleteCategory);
+
+router.get("/recommendations", isAuthenticated, getRecommendations);
 
 export default router;

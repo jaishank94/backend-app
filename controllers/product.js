@@ -1,9 +1,40 @@
 import { asyncError } from "../middlewares/error.js";
 import { Product } from "../models/product.js";
+import { User } from "../models/user.js";
 import ErrorHandler from "../utils/error.js";
 import { getDataUri } from "../utils/features.js";
 import cloudinary from "cloudinary";
 import { Category } from "../models/category.js";
+
+export const getRecommendations = asyncError(async (req, res, next) => {
+  try {
+    const userId = req.user._id;
+
+    const user = await User.findById(userId).populate("interests");
+
+    if (!user) {
+      return res.status(404).json({ message: "User not found" });
+    }
+
+    // Extract user interests and trade type
+    const userInterests = user.interests.map((interest) => interest.name);
+    const userTradeType = user.tradeType;
+
+    // Find products with matching category and trade type to user interests and trade type
+    const recommendedProducts = await Product.find({
+      category: { $in: userInterests },
+      tradeType: userTradeType,
+    });
+
+    res.status(200).json({
+      success: true,
+      recommendedProducts,
+    });
+  } catch (error) {
+    console.error("Error recommending products:", error);
+    res.status(500).json({ message: "Internal server error" });
+  }
+});
 
 export const getAllProducts = asyncError(async (req, res, next) => {
   const { keyword, category } = req.query;
@@ -50,6 +81,14 @@ export const createProduct = asyncError(async (req, res, next) => {
 
   if (!req.file) return next(new ErrorHandler("Please add image", 400));
 
+  const createdBy = req.user._id;
+
+  // Check if createdBy user exists
+  const user = await User.findById(createdBy);
+  if (!user) {
+    return next(new ErrorHandler("User not found", 404));
+  }
+
   const file = getDataUri(req.file);
   const myCloud = await cloudinary.v2.uploader.upload(file.content);
   const image = {
@@ -63,6 +102,8 @@ export const createProduct = asyncError(async (req, res, next) => {
     category,
     price,
     stock,
+    tradeType,
+    createdBy,
     images: [image],
   });
 
