@@ -23,8 +23,8 @@ const schema = new mongoose.Schema({
   },
   images: [{ public_id: String, url: String }],
   category: {
-    type: mongoose.Schema.Types.ObjectId,
-    ref: "Category",
+    type: String,
+    required: [true, "Please Select Category"],
   },
   createdBy: {
     type: mongoose.Schema.Types.ObjectId,
