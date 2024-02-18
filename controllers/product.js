@@ -17,7 +17,7 @@ export const getRecommendations = asyncError(async (req, res, next) => {
     }
 
     // Extract user interests and trade type
-    const userInterests = user.interests.map((interest) => interest.name);
+    const userInterests = user.interests.map((interest) => interest);
     const userTradeType = user.tradeType;
 
     // Find products with matching category and trade type to user interests and trade type
