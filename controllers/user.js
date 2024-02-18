@@ -105,12 +105,25 @@ export const getMyProfile = asyncError(async (req, res, next) => {
 export const updateProfile = asyncError(async (req, res, next) => {
   const user = await User.findById(req.user._id);
 
-  const { name, email, address, city, country, pinCode } = req.body;
+  const {
+    name,
+    email,
+    phoneNumber,
+    address,
+    city,
+    country,
+    pinCode,
+    interests,
+    tradeType,
+  } = req.body;
 
   if (name) user.name = name;
   if (email) user.email = email;
+  if (phoneNumber) user.phoneNumber = phoneNumber;
   if (address) user.address = address;
   if (city) user.city = city;
+  if (interests) user.interests = interests;
+  if (tradeType) user.tradeType = tradeType;
   if (country) user.country = country;
   if (pinCode) user.pinCode = pinCode;
 
