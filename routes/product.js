@@ -19,26 +19,26 @@ import { singleUpload } from "../middlewares/multer.js";
 const router = express.Router();
 
 router.get("/all", getAllProducts);
-router.get("/admin", isAuthenticated, isAdmin, getAdminProducts);
+router.get("/admin", isAuthenticated, getAdminProducts);
 
 router
   .route("/single/:id")
   .get(getProductDetails)
-  .put(isAuthenticated, isAdmin, updateProduct)
-  .delete(isAuthenticated, isAdmin, deleteProduct);
+  .put(isAuthenticated, updateProduct)
+  .delete(isAuthenticated, deleteProduct);
 
-router.post("/new", isAuthenticated, isAdmin, singleUpload, createProduct);
+router.post("/new", isAuthenticated, singleUpload, createProduct);
 
 router
   .route("/images/:id")
-  .post(isAuthenticated, isAdmin, singleUpload, addProductImage)
-  .delete(isAuthenticated, isAdmin, deleteProductImage);
+  .post(isAuthenticated, singleUpload, addProductImage)
+  .delete(isAuthenticated, deleteProductImage);
 
-router.post("/category", isAuthenticated, isAdmin, addCategory);
+router.post("/category", isAuthenticated, addCategory);
 
 router.get("/categories", getAllCategories);
 
-router.delete("/category/:id", isAuthenticated, isAdmin, deleteCategory);
+router.delete("/category/:id", isAuthenticated, deleteCategory);
 
 router.get("/recommendations", isAuthenticated, getRecommendations);
 
