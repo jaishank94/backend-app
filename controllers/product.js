@@ -24,6 +24,7 @@ export const getRecommendations = asyncError(async (req, res, next) => {
     const recommendedProducts = await Product.find({
       category: { $in: userInterests },
       tradeType: userTradeType,
+      createdBy: { $ne: req.user._id },
     });
 
     res.status(200).json({
