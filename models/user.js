@@ -57,6 +57,12 @@ const schema = new mongoose.Schema({
     enum: ["admin", "user"],
     default: "user",
   },
+  interests: {
+    type: [String],
+  },
+  referralCode: {
+    type: String,
+  },
   avatar: {
     public_id: String,
     url: String,

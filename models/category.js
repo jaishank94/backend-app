@@ -1,9 +1,14 @@
 import mongoose from "mongoose";
 
 const schema = new mongoose.Schema({
-  category: {
+  name: {
     type: String,
-    required: [true, "Please Enter Category"],
+    required: true,
+    unique: true,
+  },
+  status: {
+    type: String,
+    required: true,
   },
 });
 
