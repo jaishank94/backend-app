@@ -27,6 +27,13 @@ export const getRecommendations = asyncError(async (req, res, next) => {
       createdBy: { $ne: req.user._id },
     });
 
+    console.log(
+      "recommended",
+      recommendedProducts,
+      userInterests,
+      userTradeType
+    );
+
     res.status(200).json({
       success: true,
       recommendedProducts,
