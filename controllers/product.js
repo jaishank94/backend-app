@@ -23,7 +23,7 @@ export const getRecommendations = asyncError(async (req, res, next) => {
     // Find products with matching category and trade type to user interests and trade type
     const recommendedProducts = await Product.find({
       category: { $in: userInterests },
-      tradeType: userTradeType,
+      tradeType: { $ne: userTradeType },
       createdBy: { $ne: req.user._id },
     });
 
@@ -61,7 +61,8 @@ export const getAllProducts = asyncError(async (req, res, next) => {
   });
 });
 export const getAdminProducts = asyncError(async (req, res, next) => {
-  const products = await Product.find({}).populate("category");
+  const userId = req.user._id;
+  const products = await Product.find({ createdBy: userId });
 
   const outOfStock = products.filter((i) => i.stock === 0);
 
