@@ -61,6 +61,8 @@ export const getAdminOrders = asyncError(async (req, res, next) => {
     "user"
   );
 
+  console.log("dkdkdk", orders.length, req.user._id, orders);
+
   res.status(200).json({
     success: true,
     orders,
