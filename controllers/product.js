@@ -75,7 +75,9 @@ export const getAdminProducts = asyncError(async (req, res, next) => {
 });
 
 export const getProductDetails = asyncError(async (req, res, next) => {
-  const product = await Product.findById(req.params.id).populate("category");
+  const product = await Product.findById(req.params.id)
+    .populate("category")
+    .populate("createdBy");
 
   if (!product) return next(new ErrorHandler("Product not found", 404));
 
