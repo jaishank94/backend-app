@@ -64,10 +64,10 @@ const schema = new mongoose.Schema({
     type: Number,
     required: true,
   },
-  coupon: {
-    type: mongoose.Schema.Types.ObjectId,
-    ref: "Coupon",
-  },
+  // coupon: {
+  //   type: mongoose.Schema.Types.ObjectId,
+  //   ref: "Coupon",
+  // },
   discountPrice: {
     type: Number,
   },

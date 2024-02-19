@@ -34,7 +34,7 @@ export const createOrder = asyncError(async (req, res, next) => {
   await Order.create({
     user: req.user._id,
     tradeUser,
-    coupon,
+    // coupon,
     discountPrice,
     orderItems,
     paymentMethod,
