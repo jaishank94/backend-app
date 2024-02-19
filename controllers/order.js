@@ -20,33 +20,35 @@ export const processPayment = asyncError(async (req, res, next) => {
 
 export const createOrder = asyncError(async (req, res, next) => {
   const {
-    shippingInfo,
     orderItems,
+    tradeUser, // Assuming tradeUser is provided in the request body
     paymentMethod,
     paymentInfo,
     itemsPrice,
     taxPrice,
-    shippingCharges,
+    coupon,
+    discountPrice,
     totalAmount,
   } = req.body;
 
   await Order.create({
     user: req.user._id,
-    shippingInfo,
+    tradeUser,
+    coupon,
+    discountPrice,
     orderItems,
     paymentMethod,
     paymentInfo,
     itemsPrice,
     taxPrice,
-    shippingCharges,
     totalAmount,
   });
 
-  for (let i = 0; i < orderItems.length; i++) {
-    const product = await Product.findById(orderItems[i].product);
-    product.stock -= orderItems[i].quantity;
-    await product.save();
-  }
+  // for (let i = 0; i < orderItems.length; i++) {
+  //   const product = await Product.findById(orderItems[i].product);
+  //   product.stock -= orderItems[i].quantity;
+  //   await product.save();
+  // }
 
   res.status(201).json({
     success: true,

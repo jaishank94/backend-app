@@ -1,6 +1,25 @@
 import mongoose from "mongoose";
 
 const schema = new mongoose.Schema({
+  shippingInfo: {
+    address: {
+      type: String,
+      required: true,
+    },
+    city: {
+      type: String,
+      required: true,
+    },
+    country: {
+      type: String,
+      required: true,
+    },
+    pinCode: {
+      type: Number,
+      required: true,
+    },
+  },
+
   orderItems: [
     {
       name: {
@@ -11,17 +30,11 @@ const schema = new mongoose.Schema({
         type: Number,
         required: true,
       },
-      minOrderQty: {
+      quantity: {
         type: Number,
-      },
-      maxOrderQty: {
-        type: Number,
-      },
-      image: {
-        type: String,
         required: true,
       },
-      tradeType: {
+      image: {
         type: String,
         required: true,
       },
@@ -33,11 +46,6 @@ const schema = new mongoose.Schema({
     },
   ],
 
-  tradeUser: {
-    type: mongoose.Schema.Types.ObjectId,
-    ref: "User",
-    required: true,
-  },
   user: {
     type: mongoose.Schema.Types.ObjectId,
     ref: "User",
@@ -47,7 +55,7 @@ const schema = new mongoose.Schema({
   paymentMethod: {
     type: String,
     enum: ["COD", "ONLINE"],
-    default: "ONLINE",
+    default: "COD",
   },
 
   paidAt: Date,
@@ -64,18 +72,21 @@ const schema = new mongoose.Schema({
     type: Number,
     required: true,
   },
-  coupon: {
-    type: mongoose.Schema.Types.ObjectId,
-    ref: "Coupon",
-  },
-  discountPrice: {
+  shippingCharges: {
     type: Number,
+    required: true,
   },
   totalAmount: {
     type: Number,
     required: true,
   },
 
+  orderStatus: {
+    type: String,
+    enum: ["Preparing", "Shipped", "Delivered"],
+    default: "Preparing",
+  },
+  deliveredAt: Date,
   createdAt: {
     type: Date,
     default: Date.now,
