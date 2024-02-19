@@ -91,22 +91,12 @@ export const getProductDetails = asyncError(async (req, res, next) => {
 
   if (!product) return next(new ErrorHandler("Product not found", 404));
 
-  console.log("productDetails123", product);
-
   // Check if the user has ordered this product
-  const userOrders = await Order.find({ user: req.user._id });
+  const userOrders = await Order.find({ user: req?.user?._id });
   const userProductIds = userOrders.flatMap((order) =>
     order.orderItems.map((item) => item.product.toString())
   );
   const orderedByUser = userProductIds.includes(productId);
-
-  console.log(
-    "productDetails12",
-    product,
-    orderedByUser,
-    userOrders,
-    userProductIds
-  );
 
   // Add a property to the product indicating whether the user has ordered it
   const productDetails = {
