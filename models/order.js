@@ -34,8 +34,7 @@ const schema = new mongoose.Schema({
   ],
 
   tradeUser: {
-    type: mongoose.Schema.Types.ObjectId,
-    ref: "User",
+    type: Object,
     required: true,
   },
   user: {
