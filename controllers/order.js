@@ -61,8 +61,6 @@ export const getAdminOrders = asyncError(async (req, res, next) => {
     "tradeUser._id": req.user._id.toString(),
   }).populate("user");
 
-  console.log("dkdkdk", orders.length, req.user._id, orders);
-
   res.status(200).json({
     success: true,
     orders,

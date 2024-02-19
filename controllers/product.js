@@ -42,13 +42,6 @@ export const getRecommendations = asyncError(async (req, res, next) => {
       orderedByUser: userProductIds.includes(product._id.toString()),
     }));
 
-    console.log(
-      "recommended",
-      recommendedProducts,
-      userInterests,
-      userTradeType
-    );
-
     res.status(200).json({
       success: true,
       recommendedProducts,
@@ -90,15 +83,30 @@ export const getAdminProducts = asyncError(async (req, res, next) => {
 });
 
 export const getProductDetails = asyncError(async (req, res, next) => {
-  const product = await Product.findById(req.params.id)
+  const productId = req.params.id;
+
+  const product = await Product.findById(productId)
     .populate("category")
     .populate("createdBy");
 
   if (!product) return next(new ErrorHandler("Product not found", 404));
 
+  // Check if the user has ordered this product
+  const userOrders = await Order.find({ "tradeUser._id": req.user._id });
+  const userProductIds = userOrders.flatMap((order) =>
+    order.orderItems.map((item) => item.product.toString())
+  );
+  const orderedByUser = userProductIds.includes(productId);
+
+  // Add a property to the product indicating whether the user has ordered it
+  const productDetails = {
+    ...product.toObject(),
+    orderedByUser,
+  };
+
   res.status(200).json({
     success: true,
-    product,
+    product: productDetails,
   });
 });
 
