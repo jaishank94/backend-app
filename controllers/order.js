@@ -57,9 +57,9 @@ export const createOrder = asyncError(async (req, res, next) => {
 });
 
 export const getAdminOrders = asyncError(async (req, res, next) => {
-  const orders = await Order.find({ "tradeUser._id": req.user._id }).populate(
-    "user"
-  );
+  const orders = await Order.find({
+    "tradeUser._id": req.user._id.toString(),
+  }).populate("user");
 
   console.log("dkdkdk", orders.length, req.user._id, orders);
 
