@@ -23,7 +23,7 @@ router.get("/admin", isAuthenticated, getAdminProducts);
 
 router
   .route("/single/:id")
-  .get(getProductDetails)
+  .get(isAuthenticated, getProductDetails)
   .put(isAuthenticated, updateProduct)
   .delete(isAuthenticated, deleteProduct);
 
