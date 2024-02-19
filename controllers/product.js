@@ -21,11 +21,25 @@ export const getRecommendations = asyncError(async (req, res, next) => {
     const userTradeType = user.tradeType;
 
     // Find products with matching category and trade type to user interests and trade type
-    const recommendedProducts = await Product.find({
+    const products = await Product.find({
       category: { $in: userInterests },
       tradeType: { $ne: userTradeType },
       createdBy: { $ne: req.user._id },
     });
+
+    // Get user's orders
+    const userOrders = await Order.find({ user: req.user._id });
+
+    // Map product IDs to an array
+    const userProductIds = userOrders.flatMap((order) =>
+      order.orderItems.map((item) => item.product.toString())
+    );
+
+    // Add a property to each product indicating whether the user has ordered it
+    const recommendedProducts = products.map((product) => ({
+      ...product.toObject(),
+      orderedByUser: userProductIds.includes(product._id.toString()),
+    }));
 
     console.log(
       "recommended",
