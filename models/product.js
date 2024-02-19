@@ -17,6 +17,12 @@ const schema = new mongoose.Schema({
     type: Number,
     required: [true, "Please Enter Stock"],
   },
+  minOrderQty: {
+    type: Number,
+  },
+  maxOrderQty: {
+    type: Number,
+  },
   tradeType: {
     type: String,
     required: [true, "Please Select Trade Type"],

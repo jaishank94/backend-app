@@ -86,7 +86,16 @@ export const getProductDetails = asyncError(async (req, res, next) => {
 });
 
 export const createProduct = asyncError(async (req, res, next) => {
-  const { name, description, category, price, stock, tradeType } = req.body;
+  const {
+    name,
+    description,
+    category,
+    price,
+    stock,
+    tradeType,
+    minOrderQty,
+    maxOrderQty,
+  } = req.body;
 
   if (!req.file) return next(new ErrorHandler("Please add image", 400));
 
@@ -112,6 +121,8 @@ export const createProduct = asyncError(async (req, res, next) => {
     price,
     stock,
     tradeType,
+    minOrderQty,
+    maxOrderQty,
     createdBy,
     images: [image],
   });
@@ -123,7 +134,16 @@ export const createProduct = asyncError(async (req, res, next) => {
 });
 
 export const updateProduct = asyncError(async (req, res, next) => {
-  const { name, description, category, price, stock, tradeType } = req.body;
+  const {
+    name,
+    description,
+    category,
+    price,
+    stock,
+    tradeType,
+    minOrderQty,
+    maxOrderQty,
+  } = req.body;
 
   const product = await Product.findById(req.params.id);
   if (!product) return next(new ErrorHandler("Product not found", 404));
@@ -134,6 +154,8 @@ export const updateProduct = asyncError(async (req, res, next) => {
   if (price) product.price = price;
   if (stock) product.stock = stock;
   if (tradeType) product.tradeType = tradeType;
+  if (minOrderQty) product.minOrderQty = minOrderQty;
+  if (maxOrderQty) product.maxOrderQty = maxOrderQty;
 
   await product.save();
 
