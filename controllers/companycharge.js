@@ -7,9 +7,12 @@ import { CompanyCharge } from "../models/companycharge.js";
 const getCompanyCharges = asyncError(async (req, res, next) => {
   const companyCharges = await CompanyCharge.find({});
 
+  // Get the amount of the first entry
+  const amount = companyCharges.length > 0 ? companyCharges[0].amount : 0;
+
   res.status(200).json({
     success: true,
-    companyCharges,
+    companyCharges: amount,
   });
 });
 
