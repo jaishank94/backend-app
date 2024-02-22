@@ -27,15 +27,17 @@ export const createOrder = asyncError(async (req, res, next) => {
     itemsPrice,
     taxPrice,
     coupon,
-    discountPrice,
+    companycharges,
+    discount,
     totalAmount,
   } = req.body;
 
   await Order.create({
     user: req.user._id,
     tradeUser,
-    // coupon,
-    discountPrice,
+    coupon,
+    companycharges,
+    discount,
     orderItems,
     paymentMethod,
     paymentInfo,

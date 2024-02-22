@@ -21,6 +21,10 @@ const schema = new mongoose.Schema({
         type: String,
         required: true,
       },
+      quantity: {
+        type: Number,
+        required: true,
+      },
       tradeType: {
         type: String,
         required: true,
@@ -63,11 +67,13 @@ const schema = new mongoose.Schema({
     type: Number,
     required: true,
   },
-  // coupon: {
-  //   type: mongoose.Schema.Types.ObjectId,
-  //   ref: "Coupon",
-  // },
-  discountPrice: {
+  coupon: {
+    type: String,
+  },
+  companycharges: {
+    type: Number,
+  },
+  discount: {
     type: Number,
   },
   totalAmount: {
