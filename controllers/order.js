@@ -25,7 +25,7 @@ export const createOrder = asyncError(async (req, res, next) => {
     paymentMethod,
     paymentInfo,
     itemsPrice,
-    taxPrice,
+    // taxPrice,
     coupon,
     companycharges,
     discount,
@@ -42,7 +42,7 @@ export const createOrder = asyncError(async (req, res, next) => {
     paymentMethod,
     paymentInfo,
     itemsPrice,
-    taxPrice,
+    // taxPrice,
     totalAmount,
   });
 

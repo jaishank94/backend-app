@@ -65,7 +65,7 @@ const schema = new mongoose.Schema({
   },
   taxPrice: {
     type: Number,
-    required: true,
+    // required: true,
   },
   coupon: {
     type: String,
