@@ -4,10 +4,14 @@ const schema = new mongoose.Schema({
   code: {
     type: String,
     required: true,
-    unique: true,
+    unique: [true, "Code Already Exist"],
   },
   discount: {
     type: Number,
+    required: true,
+  },
+  type: {
+    type: String,
     required: true,
   },
 });
