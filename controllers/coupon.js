@@ -1,6 +1,25 @@
 import { asyncError } from "../middlewares/error.js";
 import { Coupon } from "../models/coupon.js";
 
+export const applyCoupon = asyncError(async (req, res, next) => {
+  const { code } = req.query;
+
+  if (!code) {
+    return next(new ErrorHandler("Coupon code is required", 400));
+  }
+
+  const coupon = await Coupon.findOne({ code });
+
+  if (!coupon) {
+    return next(new ErrorHandler("Coupon code does not exists", 404));
+  }
+
+  res.status(200).json({
+    success: true,
+    discount: coupon.discount,
+  });
+});
+
 // @desc    Fetch all coupons
 // @route   GET /api/coupons
 // @access  Public
