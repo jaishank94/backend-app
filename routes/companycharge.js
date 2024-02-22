@@ -1,16 +1,9 @@
 import express from "express";
-import {
-  getCoupons,
-  createCoupon,
-  getCouponById,
-  updateCoupon,
-  deleteCoupon,
-} from "../controllers/companychaege.js";
+import { getCompanyCharges } from "../controllers/companycharge.js";
 import { isAuthenticated } from "../middlewares/auth.js";
 
 const router = express.Router();
 
-router.get("/coupons", isAuthenticated, getCoupons);
-router.get("/coupons/:id", isAuthenticated, getCouponById);
+router.get("/all", isAuthenticated, getCompanyCharges);
 
 export default router;
