@@ -162,10 +162,13 @@ export const updatePic = asyncError(async (req, res, next) => {
   const user = await User.findById(req.user._id);
 
   const file = getDataUri(req.file);
+  console.log("asdfsdfsfsasf111122222", file, user);
 
   await cloudinary.v2.uploader.destroy(user.avatar.public_id);
 
   const myCloud = await cloudinary.v2.uploader.upload(file.content);
+
+  console.log("asdfsdfsfsasf1111", myCloud, file);
   user.avatar = {
     public_id: myCloud.public_id,
     url: myCloud.secure_url,
