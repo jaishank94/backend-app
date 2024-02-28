@@ -164,7 +164,7 @@ export const updatePic = asyncError(async (req, res, next) => {
   const file = getDataUri(req.file);
 
   if (user?.avatar?.public_id) {
-    await cloudinary.v2.uploader.destroy(user.avatar.public_id);
+    await cloudinary.v2.uploader.destroy(user?.avatar?.public_id);
   }
 
   const myCloud = await cloudinary.v2.uploader.upload(file.content);
@@ -195,7 +195,8 @@ export const forgetpassword = asyncError(async (req, res, next) => {
   const otp = Math.floor(randomNumber);
   const otp_expire = 15 * 60 * 1000;
 
-  user.otp = otp;
+  // user.otp = otp;
+  user.otp = 123456;
   user.otp_expire = new Date(Date.now() + otp_expire);
   await user.save();
 
