@@ -19,7 +19,7 @@ export const login = asyncError(async (req, res, next) => {
   const user = userEmailCheck ? userEmailCheck : userPhoneNumberCheck;
   if (!user) {
     return next(
-      new ErrorHandler("Incorrect Email / Phone number or Password", 400)
+      new ErrorHandler("Incorrect Email / Phone number or Password1", 400)
     );
   }
 
@@ -30,7 +30,7 @@ export const login = asyncError(async (req, res, next) => {
 
   if (!isMatched) {
     return next(
-      new ErrorHandler("Incorrect Email / Phone number or Password", 400)
+      new ErrorHandler("Incorrect Email / Phone number or Password2", 400)
     );
   }
   sendToken(user, res, `Welcome Back, ${user.name}`, 200);
