@@ -249,7 +249,7 @@ export const deleteProduct = asyncError(async (req, res, next) => {
   for (let index = 0; index < product.images.length; index++) {
     await cloudinary.v2.uploader.destroy(product.images[index].public_id);
   }
-  await product.remove();
+  await product.deleteOne();
   res.status(200).json({
     success: true,
     message: "Product Deleted Successfully",
