@@ -16,8 +16,6 @@ export const login = asyncError(async (req, res, next) => {
     phoneNumber: email,
   }).select("+password");
 
-  console.log(userEmailCheck, userPhoneNumberCheck);
-
   const user = userEmailCheck ? userEmailCheck : userPhoneNumberCheck;
   if (!user) {
     return next(
@@ -195,9 +193,16 @@ export const updatePic = asyncError(async (req, res, next) => {
 
 export const forgetpassword = asyncError(async (req, res, next) => {
   const { email } = req.body;
-  const user = await User.findOne({ email });
 
-  if (!user) return next(new ErrorHandler("Incorrect Email", 404));
+  const userEmailCheck = await User.findOne({ email });
+  const userPhoneNumberCheck = await User.findOne({
+    phoneNumber: email,
+  });
+
+  const user = userEmailCheck ? userEmailCheck : userPhoneNumberCheck;
+
+  if (!user)
+    return next(new ErrorHandler("Incorrect Email / Phone Number", 404));
   // max,min 2000,10000
   // math.random()*(max-min)+min
 
