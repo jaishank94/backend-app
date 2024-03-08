@@ -210,8 +210,7 @@ export const forgetpassword = asyncError(async (req, res, next) => {
   const otp = Math.floor(randomNumber);
   const otp_expire = 15 * 60 * 1000;
 
-  // user.otp = otp;
-  user.otp = 123456;
+  user.otp = otp;
   user.otp_expire = new Date(Date.now() + otp_expire);
   await user.save();
 
