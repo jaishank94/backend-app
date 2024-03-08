@@ -16,6 +16,8 @@ export const login = asyncError(async (req, res, next) => {
     phoneNumber: email,
   }).select("+password");
 
+  console.log(userEmailCheck, userPhoneNumberCheck);
+
   const user = userEmailCheck ? userEmailCheck : userPhoneNumberCheck;
   if (!user) {
     return next(
