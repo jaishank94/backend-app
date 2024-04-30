@@ -32,12 +32,6 @@ import categories from "./routes/category.js";
 import companycharge from "./routes/companycharge.js";
 import coupon from "./routes/coupon.js";
 
-app.get("/test", (req, res) => {
-  return res.json({
-    message: "API works fine!"
-  });
-});
-
 app.use("/api/v1/admin", admin);
 app.use("/api/v1/user", user);
 app.use("/api/v1/cart", cart);
