@@ -20,6 +20,7 @@ export const sendToken = (user, res, message, statusCode) => {
     .json({
       success: true,
       message: message,
+      token
     });
 };
 
@@ -32,7 +33,8 @@ export const cookieOptions = {
 export const sendEmail = async (subject, to, text) => {
   const transporter = createTransport({
     host: process.env.SMTP_HOST,
-    port: process.env.SMTP_PORT,
+    port: 465,
+    secure: true, // true for 465, false for other ports
     auth: {
       user: process.env.SMTP_USER,
       pass: process.env.SMTP_PASS,
@@ -40,6 +42,7 @@ export const sendEmail = async (subject, to, text) => {
   });
 
   await transporter.sendMail({
+    from: process.env.SMTP_SENDER_EMAIL,
     to,
     subject,
     text,

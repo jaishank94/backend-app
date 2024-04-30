@@ -18,25 +18,28 @@ import { singleUpload } from "../middlewares/multer.js";
 
 const router = express.Router();
 
-router.get("/all", getAllProducts);
-router.get("/admin", isAuthenticated, getAdminProducts);
+router.get("/", isAuthenticated, getAllProducts);
+
+// this is moved to /admin/product (admin.js)
+// router.get("/admin", isAuthenticated, getAdminProducts);
 
 router
-  .route("/single/:id")
+  .route("/:productId")
   .get(isAuthenticated, getProductDetails)
   .put(isAuthenticated, updateProduct)
   .delete(isAuthenticated, deleteProduct);
 
-router.post("/new", isAuthenticated, singleUpload, createProduct);
+// ideally should be moved under admin
+router.post("/", isAuthenticated, singleUpload, createProduct);
 
 router
-  .route("/images/:id")
+  .route("/images/:productId")
   .post(isAuthenticated, singleUpload, addProductImage)
   .delete(isAuthenticated, deleteProductImage);
 
 router.post("/category", isAuthenticated, addCategory);
 
-router.get("/categories", getAllCategories);
+router.get("/category", getAllCategories);
 
 router.delete("/category/:id", isAuthenticated, deleteCategory);
 

@@ -8,14 +8,12 @@ const schema = new mongoose.Schema({
     type: String,
     required: [true, "Please Enter Name"],
   },
-
   email: {
     type: String,
     required: [false, "Please Enter Email"],
     unique: [true, "Email Already Exist"],
     validate: validator.isEmail,
   },
-
   phoneNumber: {
     type: String,
     required: [true, "Please Enter Phone Number"],
@@ -72,6 +70,21 @@ const schema = new mongoose.Schema({
   },
   otp: Number,
   otp_expire: Date,
+  deleted: { type: Boolean, default: false } 
+});
+
+schema.pre('find', function() {
+  const hasDeletedProperty = this.schema.obj.hasOwnProperty('deleted');
+  if (hasDeletedProperty) {
+    this.where({ deleted: { $ne: true } });
+  }
+});
+
+schema.pre('findOne', function() {
+  const hasDeletedProperty = this.schema.obj.hasOwnProperty('deleted');
+  if (hasDeletedProperty) {
+    this.where({ deleted: { $ne: true } });
+  }
 });
 
 schema.pre("save", async function (next) {

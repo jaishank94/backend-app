@@ -177,7 +177,6 @@ export const updatePic = asyncError(async (req, res, next) => {
 
   const myCloud = await cloudinary.v2.uploader.upload(file.content);
 
-  console.log("asdfsdfsfsasf1111", myCloud);
   user.avatar = {
     public_id: myCloud.public_id,
     url: myCloud.secure_url,

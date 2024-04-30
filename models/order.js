@@ -80,7 +80,11 @@ const schema = new mongoose.Schema({
     type: Number,
     required: true,
   },
-
+  status: {
+    type: String,
+    enum: ["CREATED", "EXECUTED", "CANCELLED"],
+    default: "CREATED",
+  },
   createdAt: {
     type: Date,
     default: Date.now,

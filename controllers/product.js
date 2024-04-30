@@ -83,7 +83,7 @@ export const getAdminProducts = asyncError(async (req, res, next) => {
 });
 
 export const getProductDetails = asyncError(async (req, res, next) => {
-  const productId = req.params.id;
+  const { productId } = req.params;
 
   const product = await Product.findById(productId)
     .populate("category")
@@ -172,7 +172,7 @@ export const updateProduct = asyncError(async (req, res, next) => {
     maxOrderQty,
   } = req.body;
 
-  const product = await Product.findById(req.params.id);
+  const product = await Product.findById(req.params.productId);
   if (!product) return next(new ErrorHandler("Product not found", 404));
 
   if (name) product.name = name;
@@ -193,7 +193,7 @@ export const updateProduct = asyncError(async (req, res, next) => {
 });
 
 export const addProductImage = asyncError(async (req, res, next) => {
-  const product = await Product.findById(req.params.id);
+  const product = await Product.findById(req.params.productId);
   if (!product) return next(new ErrorHandler("Product not found", 404));
 
   if (!req.file) return next(new ErrorHandler("Please add image", 400));
@@ -215,7 +215,7 @@ export const addProductImage = asyncError(async (req, res, next) => {
 });
 
 export const deleteProductImage = asyncError(async (req, res, next) => {
-  const product = await Product.findById(req.params.id);
+  const product = await Product.findById(req.params.productId);
   if (!product) return next(new ErrorHandler("Product not found", 404));
 
   const id = req.query.id;
@@ -243,7 +243,7 @@ export const deleteProductImage = asyncError(async (req, res, next) => {
 });
 
 export const deleteProduct = asyncError(async (req, res, next) => {
-  const product = await Product.findById(req.params.id);
+  const product = await Product.findById(req.params.productId);
   if (!product) return next(new ErrorHandler("Product not found", 404));
 
   for (let index = 0; index < product.images.length; index++) {
