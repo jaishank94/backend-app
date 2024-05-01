@@ -187,14 +187,14 @@ export const getOrders = asyncError(async (req, res, next) => {
     let { status } = req.query;
     let orders;
     if (!status) {
-      orders = await Order.find({ status: "created" });
+      orders = await Order.find();
     } else {
       orders = await Order.find({ status });
     }
     return res.status(200).json({
       success: true,
       data: orders,
-      message: "Products fetched Successfully",
+      message: "Orders fetched Successfully",
     });
   } catch (error) {
     return res.status(400).json({

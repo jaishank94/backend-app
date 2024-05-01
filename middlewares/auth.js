@@ -5,6 +5,9 @@ import { asyncError } from "./error.js";
 import { roleHierarchy } from "../constants/index.js";
 
 export const isAuthenticated = asyncError(async (req, res, next) => {
+  if (!req.cookies.token && !req.headers.authorization) {
+    return next(new ErrorHandler("Auth token not provided", 401));
+  }
   let token = req.cookies.token || req.headers.authorization.split(' ')[1];
   if (!token) return next(new ErrorHandler("Not Logged In", 401));
   const decodedData = jwt.verify(token, process.env.JWT_SECRET);
