@@ -2,6 +2,7 @@ import { asyncError } from "../middlewares/error.js";
 import { User } from "../models/user.js";
 import { Product } from "../models/product.js";
 import { Order } from "../models/order.js";
+import { Payment } from "../models/payment.js";
 
 export const updateUserRole = asyncError(async (req, res, next) => {
   try {
@@ -231,6 +232,39 @@ export const updateOrderStatus = asyncError(async (req, res, next) => {
       success: true,
       data: order,
       message: "Order status updated Successfully",
+    });
+  } catch (error) {
+    return res.status(400).json({
+      success: false,
+      message: "Something went wrong",
+    });
+  }
+});
+
+export const getPayments = asyncError(async (req, res, next) => {
+  try {
+    let payments = await Payment.find();
+    return res.status(200).json({
+      success: true,
+      data: payments,
+      message: "Payments fetched Successfully",
+    });
+  } catch (error) {
+    return res.status(400).json({
+      success: false,
+      message: "Something went wrong",
+    });
+  }
+});
+
+export const getPaymentDetails = asyncError(async (req, res, next) => {
+  try {
+    let { paymentId } = req.params;
+    let paymentDetails = await Payment.findById(paymentId);
+    return res.status(200).json({
+      success: true,
+      data: paymentDetails,
+      message: "Payment details fetched Successfully",
     });
   } catch (error) {
     return res.status(400).json({

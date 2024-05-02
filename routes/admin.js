@@ -11,7 +11,9 @@ import {
   getProductById,
   getOrders,
   updateOrder,
-  updateOrderStatus
+  updateOrderStatus,
+  getPayments,
+  getPaymentDetails
 } from "../controllers/admin.js";
 
 import { checkRole } from "../middlewares/auth.js";
@@ -105,4 +107,17 @@ router.put(
   updateOrderStatus
 );
 
+// get payments
+router.get(
+  "/payment",
+  [authenticationAndAnalyticsWrapped, checkRole(admin)],
+  getPayments
+);
+
+// update payments before execution
+router.get(
+  "/payment/:paymentId", 
+  [authenticationAndAnalyticsWrapped, checkRole(admin)], 
+  getPaymentDetails
+);
 export default router;
