@@ -8,6 +8,9 @@ const schema = new mongoose.Schema({
     type: String,
     required: [true, "Please Enter Name"],
   },
+  stripeCustomerId: {
+    type: String,
+  },
   email: {
     type: String,
     required: [false, "Please Enter Email"],

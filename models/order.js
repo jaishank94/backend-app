@@ -89,6 +89,6 @@ const schema = new mongoose.Schema({
     type: Date,
     default: Date.now,
   },
-});
+}, { versionKey: false });
 
 export const Order = mongoose.model("Order", schema);

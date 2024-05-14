@@ -13,7 +13,8 @@ import {
   updateOrder,
   updateOrderStatus,
   getPayments,
-  getPaymentDetails
+  getPaymentDetails,
+  createPayment
 } from "../controllers/admin.js";
 
 import { checkRole } from "../middlewares/auth.js";
@@ -106,6 +107,14 @@ router.put(
   [authenticationAndAnalyticsWrapped, checkRole(admin)], 
   updateOrderStatus
 );
+
+// get payments
+router.post(
+  "/payment",
+  [authenticationAndAnalyticsWrapped, checkRole(admin)],
+  createPayment
+);
+
 
 // get payments
 router.get(

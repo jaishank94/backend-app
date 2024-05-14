@@ -2,6 +2,7 @@ import express from "express";
 import { config } from "dotenv";
 import { errorMiddleware } from "./middlewares/error.js";
 
+import bodyParser from 'body-parser';
 import cookieParser from "cookie-parser";
 import cors from "cors";
 
@@ -12,10 +13,14 @@ config({
 export const app = express();
 
 // Using Middlewares
-app.use(express.json());
+app.use((req, res, next) => {
+  if (req.originalUrl === '/api/v1/payment/webhooks') {
+    next();
+  } else {
+    bodyParser.json()(req, res, next);
+  }
+});
 app.use(cookieParser());
-
-
 app.use(
   cors({
     allowedHeaders: ['Content-Type', 'Authorization'],
@@ -34,6 +39,7 @@ import order from "./routes/order.js";
 import categories from "./routes/category.js";
 import companycharge from "./routes/companycharge.js";
 import coupon from "./routes/coupon.js";
+import payment from "./routes/payment.js";
 
 app.get("/test", (req, res) => {
   return res.json({
@@ -47,6 +53,7 @@ app.use("/api/v1/cart", cart);
 app.use("/api/v1/categories", categories);
 app.use("/api/v1/product", product);
 app.use("/api/v1/order", order);
+app.use("/api/v1/payment", payment);
 app.use("/api/v1/companycharges", companycharge);
 app.use("/api/v1/coupon", coupon);
 

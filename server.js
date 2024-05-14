@@ -2,10 +2,16 @@ import { app } from "./app.js";
 import { connectDB } from "./data/database.js";
 import cloudinary from "cloudinary";
 import Stripe from "stripe";
+import { Cashfree } from "cashfree-pg"; 
 
 connectDB();
 
 export const stripe = new Stripe(process.env.STRIPE_API_SECRET);
+
+Cashfree.XClientId = process.env.CASHFREE_APPID;
+Cashfree.XClientSecret = process.env.CASHFREE_SECRET_KEY;
+Cashfree.XEnvironment = Cashfree.Environment.SANDBOX;
+export const cashfree = Cashfree;
 
 cloudinary.v2.config({
   cloud_name: process.env.CLOUDINARY_NAME,

@@ -241,6 +241,24 @@ export const updateOrderStatus = asyncError(async (req, res, next) => {
   }
 });
 
+export const createPayment = asyncError(async (req, res, next) => {
+  const payload = req.body;
+  payload.userId = req.user._id;
+  try {
+    let payments = await Payment.create(payload);
+    return res.status(200).json({
+      success: true,
+      data: payments,
+      message: "Payments created successfully",
+    });
+  } catch (error) {
+    return res.status(400).json({
+      success: false,
+      message: "Something went wrong",
+    });
+  }
+});
+
 export const getPayments = asyncError(async (req, res, next) => {
   try {
     let payments = await Payment.find();

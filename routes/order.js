@@ -5,14 +5,12 @@ import {
   getMyOrders,
   getOrderDetails,
   proccessOrder,
-  processPayment,
 } from "../controllers/order.js";
 import { isAuthenticated } from "../middlewares/auth.js";
 
 const router = express.Router();
 
 router.post("/new", isAuthenticated, createOrder);
-router.post("/payment", isAuthenticated, processPayment);
 
 router.get("/my", isAuthenticated, getMyOrders);
 router.get("/admin", isAuthenticated, getAdminOrders);
