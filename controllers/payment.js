@@ -2,6 +2,7 @@ import crypto from 'crypto';
 import axios from 'axios';
 import { Payment } from "../models/payment.js";
 import { User } from "../models/user.js";
+import { Beneficiary } from "../models/beneficiary.js"
 import { Stripe as StripeModel } from "../models/stripe.js";
 import { stripe, cashfree } from "../server.js";
 import { asyncError } from "../middlewares/error.js";
@@ -185,20 +186,26 @@ export const stripeWebhooks = asyncError(async (request, response, next) => {
       );
       break;
     case 'charge.refunded':
-      await Payment.findOneAndUpdate(
-        { "transactionDetails.transactionId": event.data.object.payment_intent },
-        {
-          $push: {
-            refundDetails: {
-              refundTransactionId: event.data.object.id,
-              refundAmount: Number(event.data.object.amount_refunded / 100),
-              status: event.data.object.status,
-              receiptUrl: event.data.object.receipt_url
-            }
+    let refundedAmount;
+    if (event.data.previous_attributes.amount_refunded) {
+      refundedAmount = Number(event.data.object.amount_refunded - event.data.previous_attributes.amount_refunded) / 100;
+    } else {
+      refundedAmount = Number(event.data.object.amount_refunded / 100);
+    }
+    await Payment.findOneAndUpdate(
+      { "transactionDetails.transactionId": event.data.object.payment_intent },
+      {
+        $push: {
+          refundDetails: {
+            refundTransactionId: event.data.object.id,
+            refundAmount: refundedAmount,
+            status: event.data.object.status,
+            receiptUrl: event.data.object.receipt_url
           }
         }
-      );
-      break;
+      }
+    );
+    break;
     case 'charge.refund.updated':
       break;
     default:
@@ -290,7 +297,7 @@ export const initateRefund = asyncError(async (req, res, next) => {
         payment_intent: transactionId,
       });
     }
-    return res.send(refund);
+    return res.send({ success: true });
   } catch (error) {
     console.error(error);
     return res.status(500).json({ success: false, error: error.message });
@@ -507,8 +514,7 @@ export const cashfreeCheckPaymentSettlements = asyncError(async (req, res) => {
   }
 });
 export const cashfreeAddBeneficiary = asyncError(async (req, res) => {
-  const customId = mongoose.Types.ObjectId().toString();
-  console.log(customId, "cus")
+  const beneficiaryId = new mongoose.Types.ObjectId().toString();
   const { 
     name,
     email, 
@@ -526,7 +532,7 @@ export const cashfreeAddBeneficiary = asyncError(async (req, res) => {
   try {
     const url = `https://payout-gamma.cashfree.com/payout/v1/addBeneficiary`;
     const headers = {
-      Authorization: 'Bearer eyJhbGciOiJIUzM4NCIsInR5cCI6IkpXVCJ9.eyJjbGllbnRJZCI6IkNGMjAyNjBDTDBFM00wSk81UktTN0tPRzA1RyIsImFjY291bnRJZCI6NDc0NTI5LCJzaWduYXR1cmVDaGVjayI6ZmFsc2UsImlwIjoiIiwiYWdlbnQiOiJQQVlPVVQiLCJjaGFubmVsIjoiIiwiYWdlbnRJZCI6NDc0NTI5LCJraWQiOiJDRjIwMjYwQ0wwRTNNMEpPNVJLUzdLT0cwNUciLCJlbmFibGVBcGkiOnRydWUsImV4cCI6MTcxNTY4NzQyNCwiaWF0IjoxNzE1Njg2ODI0LCJzdWIiOiJQQVlPVVRBUElfQVVUSCJ9.4CIIPQo07lRiWREg1PXFZutu5r_3E5DH2Gv8NYY5bB2cdfej74_N84TEUoSwDOnG',
+      Authorization: 'Bearer eyJhbGciOiJIUzM4NCIsInR5cCI6IkpXVCJ9.eyJjbGllbnRJZCI6IkNGMjAyNjBDTDBFM00wSk81UktTN0tPRzA1RyIsImFjY291bnRJZCI6NDc0NTI5LCJzaWduYXR1cmVDaGVjayI6ZmFsc2UsImlwIjoiIiwiYWdlbnQiOiJQQVlPVVQiLCJjaGFubmVsIjoiIiwiYWdlbnRJZCI6NDc0NTI5LCJraWQiOiJDRjIwMjYwQ0wwRTNNMEpPNVJLUzdLT0cwNUciLCJlbmFibGVBcGkiOnRydWUsImV4cCI6MTcxNTY5MzI3NywiaWF0IjoxNzE1NjkyNjc3LCJzdWIiOiJQQVlPVVRBUElfQVVUSCJ9.LxtZ5_JyCVu-RiVU1DTbsjXRvge4R87e3M0qDCzbONRpUzHG2GahciuNcov7N7BW',
       Accept: 'application/json',
       'content-type': 'application/json',
       'x-api-version': process.env.CASHFREE_API_VERSION,
@@ -534,7 +540,7 @@ export const cashfreeAddBeneficiary = asyncError(async (req, res) => {
       'x-client-secret': process.env.CASHFREE_SECRET_KEY,
     };
     const payload = {
-      beneId: 'JOHN18011341',
+      beneId: beneficiaryId,
       name,
       email,
       phone: phone,
@@ -550,8 +556,13 @@ export const cashfreeAddBeneficiary = asyncError(async (req, res) => {
     };
     
     const response = await axios.post(url, payload, { headers });
-    console.log(response.data);
-    return res.status(200).json({ success: true, status: response.data });
+
+    if (response.data.status === "SUCCESS") {
+      const ben = await Beneficiary.create({
+        _id: beneficiaryId, name, email, bankAccountNumber, bankIFSC, vpa, phone, address1, address2, city, state, pincode, purpose  
+      });
+      return res.status(200).json({ success: true, status: response.data });
+    }
   } catch (error) {
     console.log(error);
     res.status(500).send({
@@ -560,18 +571,33 @@ export const cashfreeAddBeneficiary = asyncError(async (req, res) => {
     });
   }
 });
-export const cashfreeGetBeneficiary = asyncError(async (req, res) => {
+
+export const cashfreeGetBeneficiaries = asyncError(async (req, res) => {
   try {
-    const url = `${process.env.CASHFREE_URL}/pg/lrs/beneficiaries`;
+    const beneficiaries = await Beneficiary.find();
+    return res.status(200).json({ success: true, data: beneficiaries });
+  } catch (error) {
+    console.log(error);
+    res.status(500).send({
+      message: error.message,
+      success: false
+    });
+  }
+});
+
+export const cashfreeGetBeneficiaryDetails = asyncError(async (req, res) => {
+  try {
+    const url = `https://payout-gamma.cashfree.com/payout/v1/getBeneficiary/${req.params.beneficiaryId}`;
     const headers = {
-      'accept': 'application/json',
+      Authorization: 'Bearer eyJhbGciOiJIUzM4NCIsInR5cCI6IkpXVCJ9.eyJjbGllbnRJZCI6IkNGMjAyNjBDTDBFM00wSk81UktTN0tPRzA1RyIsImFjY291bnRJZCI6NDc0NTI5LCJzaWduYXR1cmVDaGVjayI6ZmFsc2UsImlwIjoiIiwiYWdlbnQiOiJQQVlPVVQiLCJjaGFubmVsIjoiIiwiYWdlbnRJZCI6NDc0NTI5LCJraWQiOiJDRjIwMjYwQ0wwRTNNMEpPNVJLUzdLT0cwNUciLCJlbmFibGVBcGkiOnRydWUsImV4cCI6MTcxNTY5Njk5NiwiaWF0IjoxNzE1Njk2Mzk2LCJzdWIiOiJQQVlPVVRBUElfQVVUSCJ9.v-m4mJ5SiY6bEksJLhIQbjIZpUxslHfpi7ne75F5iOTchRnpGvO8yPSu6HvD9Fxx',
+      Accept: 'application/json',
+      'content-type': 'application/json',
       'x-api-version': process.env.CASHFREE_API_VERSION,
       'x-client-id': process.env.CASHFREE_APPID,
       'x-client-secret': process.env.CASHFREE_SECRET_KEY,
     };
     const response = await axios.get(url, { headers });
-    console.log(response, "S")
-    return res.status(200).json({ success: true, status: response.data });
+    return res.status(200).json({ success: true, data: response.data.data });
   } catch (error) {
     console.log(error);
     res.status(500).send({

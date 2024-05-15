@@ -12,7 +12,8 @@ import {
   cashfreeCheckPaymentStatus,
   cashfreeCheckPaymentSettlements,
   cashfreeAddBeneficiary,
-  cashfreeGetBeneficiary
+  cashfreeGetBeneficiaries,
+  cashfreeGetBeneficiaryDetails
 } from "../controllers/payment.js";
 import { authenticationAndAnalyticsWrapped } from "../middlewares/index.js";
 
@@ -38,7 +39,8 @@ router.post('/cashfree/checkoutSession', authenticationAndAnalyticsWrapped, cash
 router.get('/cashfree/status/:orderId', authenticationAndAnalyticsWrapped, cashfreeCheckPaymentStatus);
 router.get('/cashfree/status/:orderId/settlements', authenticationAndAnalyticsWrapped, cashfreeCheckPaymentSettlements);
 router.post('/cashfree/payout/beneficiary', authenticationAndAnalyticsWrapped, cashfreeAddBeneficiary);
-router.get('/cashfree/payout/beneficiary', authenticationAndAnalyticsWrapped, cashfreeGetBeneficiary);
+router.get('/cashfree/payout/beneficiary', authenticationAndAnalyticsWrapped, cashfreeGetBeneficiaries);
+router.get('/cashfree/payout/beneficiary/:beneficiaryId', authenticationAndAnalyticsWrapped, cashfreeGetBeneficiaryDetails);
 
 
 
