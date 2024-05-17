@@ -54,21 +54,22 @@ export const getRecommendations = asyncError(async (req, res, next) => {
 
 export const getAllProducts = asyncError(async (req, res, next) => {
   const { keyword, category } = req.query;
-
-  const products = await Product.find({
+  const query = {
     name: {
       $regex: keyword ? keyword : "",
       $options: "i",
     },
-    category: category ? category : undefined,
-  });
-
+  };
+  if (category !== undefined) {
+    query.category = category;
+  }
+  const products = await Product.find(query);
   res.status(200).json({
     success: true,
     products,
   });
 });
-export const getAdminProducts = asyncError(async (req, res, next) => {
+export const getUserProducts = asyncError(async (req, res, next) => {
   const userId = req.user._id;
   const products = await Product.find({ createdBy: userId });
 
@@ -266,6 +267,7 @@ export const addCategory = asyncError(async (req, res, next) => {
 });
 
 export const getAllCategories = asyncError(async (req, res, next) => {
+  console.log("INC")
   const categories = await Category.find({});
 
   res.status(200).json({

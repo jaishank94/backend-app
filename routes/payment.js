@@ -7,13 +7,17 @@ import {
   initiatePayment, 
   stripeWebhooks,
   initateRefund,
-  phonepeCreatePayment,
-  cashfreeCreateCheckoutSession,
-  cashfreeCheckPaymentStatus,
-  cashfreeCheckPaymentSettlements,
-  cashfreeAddBeneficiary,
-  cashfreeGetBeneficiaries,
-  cashfreeGetBeneficiaryDetails
+  // cashfreeCreateCheckoutSession,
+  // cashfreeCheckPaymentStatus,
+  // cashfreeCheckPaymentSettlements,
+  // cashfreeAddBeneficiary,
+  // cashfreeGetBeneficiaries,
+  // cashfreeGetBeneficiaryDetails,
+  // cashfreeDirectBankTransfer,
+  // cashfreeGetDirectTransferStatus,
+  razorpayCreateOrder,
+  razorpayFetchOrders,
+  razorpayGetPaymentsList,
 } from "../controllers/payment.js";
 import { authenticationAndAnalyticsWrapped } from "../middlewares/index.js";
 
@@ -31,19 +35,20 @@ router.post("/confirmPaymentIntent", authenticationAndAnalyticsWrapped, confirmP
 router.post("/createSessionCheckout", authenticationAndAnalyticsWrapped, createSessionCheckout);
 router.post("/initiateRefund", authenticationAndAnalyticsWrapped, initateRefund);
 
-// PHONEPE - upi
-router.post('/phonepe/pay', authenticationAndAnalyticsWrapped, phonepeCreatePayment);
-
 // CASHFREE
-router.post('/cashfree/checkoutSession', authenticationAndAnalyticsWrapped, cashfreeCreateCheckoutSession);
-router.get('/cashfree/status/:orderId', authenticationAndAnalyticsWrapped, cashfreeCheckPaymentStatus);
-router.get('/cashfree/status/:orderId/settlements', authenticationAndAnalyticsWrapped, cashfreeCheckPaymentSettlements);
-router.post('/cashfree/payout/beneficiary', authenticationAndAnalyticsWrapped, cashfreeAddBeneficiary);
-router.get('/cashfree/payout/beneficiary', authenticationAndAnalyticsWrapped, cashfreeGetBeneficiaries);
-router.get('/cashfree/payout/beneficiary/:beneficiaryId', authenticationAndAnalyticsWrapped, cashfreeGetBeneficiaryDetails);
+// router.post('/cashfree/checkoutSession', authenticationAndAnalyticsWrapped, cashfreeCreateCheckoutSession);
+// router.get('/cashfree/status/:orderId', authenticationAndAnalyticsWrapped, cashfreeCheckPaymentStatus);
+// router.get('/cashfree/status/:orderId/settlements', authenticationAndAnalyticsWrapped, cashfreeCheckPaymentSettlements);
+// router.post('/cashfree/payout/beneficiary', authenticationAndAnalyticsWrapped, cashfreeAddBeneficiary);
+// router.get('/cashfree/payout/beneficiary', authenticationAndAnalyticsWrapped, cashfreeGetBeneficiaries);
+// router.get('/cashfree/payout/beneficiary/:beneficiaryId', authenticationAndAnalyticsWrapped, cashfreeGetBeneficiaryDetails);
+// router.post('/cashfree/payout/directTransfer', authenticationAndAnalyticsWrapped, cashfreeDirectBankTransfer);
+// router.get('/cashfree/payout/directTransfer/status', authenticationAndAnalyticsWrapped, cashfreeGetDirectTransferStatus);
 
-
-
+// RAZORPAY
+router.post('/razorpay/orders', authenticationAndAnalyticsWrapped, razorpayCreateOrder);
+router.get('/razorpay/orders', authenticationAndAnalyticsWrapped, razorpayFetchOrders);
+router.get('/razorpay/payments', authenticationAndAnalyticsWrapped, razorpayGetPaymentsList);
 
 
 export default router;
