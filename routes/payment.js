@@ -18,6 +18,9 @@ import {
   razorpayCreateOrder,
   razorpayFetchOrders,
   razorpayGetPaymentsList,
+  razorpayCapturePayment,
+  razorpayGetPaymentDetails,
+  razorpayPaymentLink,
 } from "../controllers/payment.js";
 import { authenticationAndAnalyticsWrapped } from "../middlewares/index.js";
 
@@ -48,7 +51,11 @@ router.post("/initiateRefund", authenticationAndAnalyticsWrapped, initateRefund)
 // RAZORPAY
 router.post('/razorpay/orders', authenticationAndAnalyticsWrapped, razorpayCreateOrder);
 router.get('/razorpay/orders', authenticationAndAnalyticsWrapped, razorpayFetchOrders);
-router.get('/razorpay/payments', authenticationAndAnalyticsWrapped, razorpayGetPaymentsList);
+router.post('/razorpay/capture', authenticationAndAnalyticsWrapped, razorpayCapturePayment);
+router.post('/razorpay/paymentLink', authenticationAndAnalyticsWrapped, razorpayPaymentLink);
+router.get('/razorpay/list', authenticationAndAnalyticsWrapped, razorpayGetPaymentsList);
+router.get('/razorpay/:paymentId', authenticationAndAnalyticsWrapped, razorpayGetPaymentDetails);
+
 
 
 export default router;

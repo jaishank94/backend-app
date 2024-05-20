@@ -69,6 +69,7 @@ export const getAllProducts = asyncError(async (req, res, next) => {
     products,
   });
 });
+
 export const getUserProducts = asyncError(async (req, res, next) => {
   const userId = req.user._id;
   const products = await Product.find({ createdBy: userId });
@@ -267,7 +268,6 @@ export const addCategory = asyncError(async (req, res, next) => {
 });
 
 export const getAllCategories = asyncError(async (req, res, next) => {
-  console.log("INC")
   const categories = await Category.find({});
 
   res.status(200).json({

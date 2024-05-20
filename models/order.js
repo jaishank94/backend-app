@@ -59,6 +59,15 @@ const schema = new mongoose.Schema({
     status: String,
   },
 
+  paymentGateway: {
+    type: String,
+    enum: ["STRIPE", "RAZORPAY"],
+  },
+  razorpayOrderReference: {
+    type: String,
+    ref: 'razorpayOrders'
+    // order_OBAVRMrxB3zOiu
+  },
   itemsPrice: {
     type: Number,
     required: true,

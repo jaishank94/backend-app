@@ -5,43 +5,51 @@ import ErrorHandler from "../utils/error.js";
 import { stripe } from "../server.js";
 
 export const createOrder = asyncError(async (req, res, next) => {
-  const {
-    orderItems,
-    tradeUser, // Assuming tradeUser is provided in the request body
-    paymentMethod,
-    paymentInfo,
-    itemsPrice,
-    // taxPrice,
-    coupon,
-    companycharges,
-    discount,
-    totalAmount,
-  } = req.body;
-
-  await Order.create({
-    user: req.user._id,
-    tradeUser,
-    coupon,
-    companycharges,
-    discount,
-    orderItems,
-    paymentMethod,
-    paymentInfo,
-    itemsPrice,
-    // taxPrice,
-    totalAmount,
-  });
-
-  // for (let i = 0; i < orderItems.length; i++) {
-  //   const product = await Product.findById(orderItems[i].product);
-  //   product.stock -= orderItems[i].quantity;
-  //   await product.save();
-  // }
-
-  res.status(201).json({
-    success: true,
-    message: "Trade Requested Successfully",
-  });
+  try {
+    const {
+      orderItems,
+      tradeUser, // Assuming tradeUser is provided in the request body
+      paymentMethod,
+      paymentInfo,
+      itemsPrice,
+      // taxPrice,
+      coupon,
+      companycharges,
+      discount,
+      totalAmount,
+    } = req.body;
+  
+    const order = await Order.create({
+      user: req.user._id,
+      tradeUser,
+      coupon,
+      companycharges,
+      discount,
+      orderItems,
+      paymentMethod,
+      paymentInfo,
+      itemsPrice,
+      // taxPrice,
+      totalAmount,
+    });
+  
+    // for (let i = 0; i < orderItems.length; i++) {
+    //   const product = await Product.findById(orderItems[i].product);
+    //   product.stock -= orderItems[i].quantity;
+    //   await product.save();
+    // }
+  
+    return res.status(201).json({
+      success: true,
+      message: "Trade Requested Successfully",
+      data: { orderId: order._id },
+    });
+  } catch (error) {
+    return res.status(400).json({
+      success: false,
+      message: error.message
+    })
+  }
 });
 
 export const getAdminOrders = asyncError(async (req, res, next) => {
