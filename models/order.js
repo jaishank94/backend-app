@@ -58,11 +58,6 @@ const schema = new mongoose.Schema({
     id: String,
     status: String,
   },
-
-  paymentGateway: {
-    type: String,
-    enum: ["STRIPE", "RAZORPAY"],
-  },
   razorpayOrderReference: {
     type: String,
     ref: 'razorpayOrders'

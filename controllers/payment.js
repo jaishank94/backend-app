@@ -599,10 +599,31 @@ export const razorpayFetchOrders = asyncError(async (req, res) => {
 });
 
 export const razorpayCapturePayment = asyncError(async (req, res) => {
-  const { paymentId, amount, currency = "INR" } = req.body;
+  const hmac = crypto.createHmac('sha256', process.env.RAZORPAY_KEY_SECRET);
+  const { razorpayOrderId, razorpayPaymentId, razorpaySignature, amount, currency = "INR" } = req.body;
+  const { _id: userId } = req.user;
   try {
-    const payment = await razorpay.payments.capture(paymentId, amount, currency);
-    return res.status(200).json({ success: true, data: payment });
+    // const payment = await razorpay.payments.capture(paymentId, amount, currency);
+    hmac.update(razorpayOrderId + "|" + razorpayPaymentId);
+    let generatedSignature = hmac.digest('hex');
+    let isSignatureValid = generatedSignature == razorpaySignature;
+    if (!isSignatureValid) {
+      return res.status(400).json({ success: false, message: "Payment could not be verified, please contact customer support hepl@sosuvconsulting.com" });
+    }
+    const order = await Order.findOne({ razorpayOrderReference: razorpayOrderId });
+    const data = await Payment.create({
+      userId, 
+      orderId: order._id, 
+      amount, 
+      currency, 
+      transactionDetails: {
+        paymentGateway: "RAZORPAY",
+        transactionId: razorpayPaymentId,
+        status: "complete",
+      } 
+    });
+
+    return res.status(200).json({ success: true, data });
   } catch (error) {
     console.error('Error:', error);
     return res.send(error);

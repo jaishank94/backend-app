@@ -4,6 +4,10 @@ const transactionSchema = new mongoose.Schema({
   transactionId: {
     type: String,
   },
+  paymentGateway: {
+    type: String,
+    enum: ["STRIPE", "RAZORPAY"],
+  },
   paymentMethodId: {
     type: String,
   },
