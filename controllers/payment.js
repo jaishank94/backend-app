@@ -693,4 +693,35 @@ export const razorpayPaymentLink = asyncError(async (req, res) => {
     console.error('Error:', error);
     return res.send(error);
   }
-}); 
+});
+
+export const razorpayInitiateRefund = asyncError(async (req, res) => {
+  const receipt = new mongoose.Types.ObjectId().toString();
+  const { razorpayPaymentId, amount, notes1, notes2 } = req.body;
+  
+  try {
+    const refund = await razorpay.payments.refund(razorpayPaymentId, {
+      amount,
+      speed: "normal",
+      notes: {
+        notes_key_1: notes1 || "",
+        notes_key_2: notes2 || "",
+      },
+      receipt
+    });
+    await Payment.findOneAndUpdate({ 'transactionDetails.transactionId': razorpayPaymentId }, 
+    { 
+      $push : {
+        refundDetails: {
+          refundTransactionId: refund.id,
+          refundAmount: refund.amount,
+          refundCurrency: refund.currency,
+          status: refund.status
+        }
+      } 
+    })
+    return res.status(200).json({ success: true, data: refund });
+  } catch (error) {
+    return res.status(200).json({ success: false, message: error.error.description });
+  }
+});
