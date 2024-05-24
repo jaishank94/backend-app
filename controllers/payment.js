@@ -8,6 +8,8 @@ import { stripe, razorpay } from "../server.js";
 import { asyncError } from "../middlewares/error.js";
 import { RazorpayOrder } from '../models/razorpayOrder.js';
 import { Order } from '../models/order.js';
+import { RazorpayCustomer } from '../models/razorpayCustomer.js';
+import { RazorpayXCustomer } from '../models/razorpayXCustomer.js';
 
 // const bearerToken = 'Bearer eyJhbGciOiJIUzM4NCIsInR5cCI6IkpXVCJ9.eyJjbGllbnRJZCI6IkNGMjAyNjBDTDBFM00wSk81UktTN0tPRzA1RyIsImFjY291bnRJZCI6NDc0NTI5LCJzaWduYXR1cmVDaGVjayI6ZmFsc2UsImlwIjoiIiwiYWdlbnQiOiJQQVlPVVQiLCJjaGFubmVsIjoiIiwiYWdlbnRJZCI6NDc0NTI5LCJraWQiOiJDRjIwMjYwQ0wwRTNNMEpPNVJLUzdLT0cwNUciLCJlbmFibGVBcGkiOnRydWUsImV4cCI6MTcxNTc3MTY2MiwiaWF0IjoxNzE1NzcxMDYyLCJzdWIiOiJQQVlPVVRBUElfQVVUSCJ9.mZw45f_9OmFtYyRfUo45l8dIOkOYo7i8sukImv7v-qO-FUPpCoYOmwfW2gUJNaVB';
 
@@ -554,6 +556,74 @@ export const initateRefund = asyncError(async (req, res, next) => {
 // });
 
 // RZRPY
+export const razorpayCreateCustomer = asyncError(async (req, res) => {
+  const { name, contact, email, gstin, notes = [] } = req.body;
+  try {
+    const customer = await razorpay.customers.create(
+      {
+        name,
+        contact,
+        email,
+        fail_existing: 1,
+        gstin,
+        notes
+      }
+    );
+    await RazorpayCustomer.create({
+      customerId: customer.id,
+      name,
+      email,
+      contact,
+      gstin,
+      notes
+    });
+    return res.status(200).send({ success: true, data: customer });
+  } catch (error) {
+    console.error('Error:', error);
+    return res.status(400).send({ success: false, message: error.error.description });
+  }
+});
+
+export const razorpayGetCustomers = asyncError(async (req, res) => {
+  try {
+    const customers = await razorpay.customers.all();
+    return res.status(200).send({ success: true, data: customers.items });
+  } catch (error) {
+    console.error('Error:', error);
+    return res.status(400).send({ success: false, message: error.error.description });
+  }
+});
+
+export const razorpayCreateFundAccount = asyncError(async (req, res) => {
+  const { contactId, accountType = "bank_account", name, accountNumber, ifsc } = req.body;
+  try {
+    const fundAccount = await razorpay.fundAccount.create({
+      customer_id: contactId,
+      account_type: accountType,
+      bank_account: {
+        name,
+        ifsc,
+        account_number: accountNumber
+      }
+    });
+    return res.status(200).send({ success: true, data: fundAccount });
+  } catch (error) {
+    console.error('Error:', error);
+    return res.status(400).send({ success: false, message: error.error.description });
+  }
+});
+
+export const razorpayGetFundAccount = asyncError(async (req, res) => {
+  const { customerId } = req.params;
+  try {
+    const fundAccount = await razorpay.fundAccount.fetch(customerId);
+    return res.status(200).send({ success: true, data: fundAccount.items });
+  } catch (error) {
+    console.error('Error:', error);
+    return res.status(400).send({ success: false, message: error.message });
+  }
+});
+
 export const razorpayCreateOrder = asyncError(async (req, res) => {
   try {
     const { systemOrderId, amount, currency = "INR" } = req.body;
@@ -612,15 +682,15 @@ export const razorpayCapturePayment = asyncError(async (req, res) => {
     }
     const order = await Order.findOne({ razorpayOrderReference: razorpayOrderId });
     const data = await Payment.create({
-      userId, 
-      orderId: order._id, 
-      amount, 
-      currency, 
+      userId,
+      orderId: order._id,
+      amount,
+      currency,
       transactionDetails: {
         paymentGateway: "RAZORPAY",
         transactionId: razorpayPaymentId,
         status: "complete",
-      } 
+      }
     });
 
     return res.status(200).json({ success: true, data });
@@ -656,16 +726,16 @@ export const razorpayGetPaymentDetails = asyncError(async (req, res) => {
 });
 
 export const razorpayPaymentLink = asyncError(async (req, res) => {
-  const { 
-    upiLink = false, 
+  const {
+    upiLink = false,
     amount,
-    description = "Payment", 
-    currency = "INR", 
-    customerName, 
-    customerEmail, 
-    customerContact, 
-    sendEmail = false, 
-    sendSMS = false 
+    description = "Payment",
+    currency = "INR",
+    customerName,
+    customerEmail,
+    customerContact,
+    sendEmail = false,
+    sendSMS = false
   } = req.body;
   try {
     const options = {
@@ -686,7 +756,7 @@ export const razorpayPaymentLink = asyncError(async (req, res) => {
       },
       callback_url: process.env.STRIPE_PAYMENT_SUCCESS_URL,
       callback_method: "get"
-    }
+    };
     const data = await razorpay.paymentLink.create(options);
     return res.status(200).json({ success: true, data: { paymentLink: data.short_url, amount: Number(data.amount / 100) } });
   } catch (error) {
@@ -698,7 +768,7 @@ export const razorpayPaymentLink = asyncError(async (req, res) => {
 export const razorpayInitiateRefund = asyncError(async (req, res) => {
   const receipt = new mongoose.Types.ObjectId().toString();
   const { razorpayPaymentId, amount, notes1, notes2 } = req.body;
-  
+
   try {
     const refund = await razorpay.payments.refund(razorpayPaymentId, {
       amount,
@@ -709,19 +779,230 @@ export const razorpayInitiateRefund = asyncError(async (req, res) => {
       },
       receipt
     });
-    await Payment.findOneAndUpdate({ 'transactionDetails.transactionId': razorpayPaymentId }, 
-    { 
-      $push : {
-        refundDetails: {
-          refundTransactionId: refund.id,
-          refundAmount: refund.amount,
-          refundCurrency: refund.currency,
-          status: refund.status
+    await Payment.findOneAndUpdate({ 'transactionDetails.transactionId': razorpayPaymentId },
+      {
+        $push: {
+          refundDetails: {
+            refundTransactionId: refund.id,
+            refundAmount: refund.amount,
+            refundCurrency: refund.currency,
+            status: refund.status
+          }
         }
-      } 
-    })
+      });
     return res.status(200).json({ success: true, data: refund });
   } catch (error) {
     return res.status(200).json({ success: false, message: error.error.description });
+  }
+});
+
+export const razorpayXCreateCustomer = asyncError(async (req, res) => {
+  const { name, contact, email, type } = req.body;
+  try {
+    const url = 'https://api.razorpay.com/v1/contacts';
+    const auth = {
+      username: process.env.RAZORPAYX_KEY_ID,
+      password: process.env.RAZORPAYX_KEY_SECRET
+    };
+    const data = {
+      name,
+      email,
+      contact,
+      type, // vendor, employee, customer, self etc
+    };
+    const response = await axios.post(url, data, {
+      auth: auth,
+      headers: {
+        'Content-Type': 'application/json'
+      }
+    });
+    const customer = response.data;
+    await RazorpayXCustomer.create({
+      customerId: customer.id,
+      name, email, contact, type
+    });
+    return res.status(200).send({ success: true, data: customer });
+  } catch (error) {
+    console.error('Error:', error);
+    return res.status(400).send({ success: false, message: error.error.description });
+  }
+});
+
+export const razorpayXGetCustomers = asyncError(async (req, res) => {
+  try {
+    const url = 'https://api.razorpay.com/v1/contacts';
+    const auth = {
+      username: process.env.RAZORPAYX_KEY_ID,
+      password: process.env.RAZORPAYX_KEY_SECRET
+    };
+
+    const customers = await axios.get(url, {
+      auth: auth,
+      headers: {
+        'Content-Type': 'application/json'
+      }
+    });
+
+    return res.status(200).send({ success: true, data: customers.data.items });
+  } catch (error) {
+    console.error('Error:', error);
+    return res.status(400).send({ success: false, message: error.error.description });
+  }
+});
+
+export const razorpayXGetCustomerById = asyncError(async (req, res) => {
+  const { customerId } = req.params;
+  try {
+    const url = `https://api.razorpay.com/v1/contacts/${customerId}`;
+    const auth = {
+      username: process.env.RAZORPAYX_KEY_ID,
+      password: process.env.RAZORPAYX_KEY_SECRET
+    };
+
+    const customers = await axios.get(url, {
+      auth: auth,
+      headers: {
+        'Content-Type': 'application/json'
+      }
+    });
+
+    return res.status(200).send({ success: true, data: customers.data });
+  } catch (error) {
+    console.error('Error:', error);
+    return res.status(400).send({ success: false, message: error.error.description });
+  }
+});
+
+export const razorpayXCreateFundAccount = asyncError(async (req, res) => {
+  try {
+    const { customerId, accountType, accountName, accountIFSC, accountNumber, vpaAddress } = req.body;
+    if (accountType === 'bank_account' && (!accountName || !accountIFSC || !accountNumber)) 
+      return res.status(400).json(
+        { 
+          success: false, 
+          message: "Bank Account Holder's Name, Bank Account Number and Bank Account IFSC is required when account type is bank_account" 
+        }
+      );
+    else if (accountType === 'vpa' && (!vpaAddress))
+      return res.status(400).json(
+        { 
+          success: false, 
+          message: "VPA address is required when account type is vpa" 
+        }
+      );
+    
+    const url = `https://api.razorpay.com/v1/fund_accounts`;
+    const auth = {
+      username: process.env.RAZORPAYX_KEY_ID,
+      password: process.env.RAZORPAYX_KEY_SECRET
+    };
+    const data = {
+      contact_id: customerId,
+      account_type: accountType 
+    };
+    if (accountType === 'bank_account') {
+      data.bank_account = {
+        name: accountName,
+        ifsc: accountIFSC,
+        account_number: accountNumber
+      }
+    } else if (accountType === 'vpa') {
+      data.vpa = {
+        address: vpaAddress
+      }
+    }
+    const customers = await axios.post(url, data, {
+      auth: auth,
+      headers: {
+        'Content-Type': 'application/json'
+      }
+    });
+    return res.status(200).send({ success: true, data: customers.data });
+  } catch (error) {
+    return res.status(400).send({ success: false, message: error.error.description });
+  }
+});
+
+export const razorpayXGetFundAccount = asyncError(async (req, res) => {
+  try {   
+    const url = `https://api.razorpay.com/v1/fund_accounts`;
+    const auth = {
+      username: process.env.RAZORPAYX_KEY_ID,
+      password: process.env.RAZORPAYX_KEY_SECRET
+    };
+    const customers = await axios.get(url, {
+      auth: auth,
+      headers: {
+        'Content-Type': 'application/json'
+      }
+    });
+
+    return res.status(200).send({ success: true, data: customers.data.items });
+  } catch (error) {
+    console.log(error);
+    return res.status(400).send({ success: false, message: error });
+  }
+
+});
+
+export const razorpayXGetFundByCustomerId = asyncError(async (req, res) => {
+  try {
+    const { customerId } = req.params;
+    
+    const url = `https://api.razorpay.com/v1/contacts/${customerId}`;
+    const auth = {
+      username: process.env.RAZORPAYX_KEY_ID,
+      password: process.env.RAZORPAYX_KEY_SECRET
+    };
+    const customers = await axios.get(url, {
+      auth: auth,
+      headers: {
+        'Content-Type': 'application/json'
+      }
+    });
+    const fundAccount = await axios.get(`https://api.razorpay.com/v1/fund_accounts`, {
+      auth: auth,
+      headers: {
+        'Content-Type': 'application/json'
+      }
+    });
+    let customerFA = fundAccount.data.items.filter((fa) => {
+      return fa.contact_id === customers.data.id;
+    });
+    customers.data.faAcc = customerFA;
+    return res.status(200).send({ success: true, data: customers.data });
+  } catch (error) {
+    console.log(error);
+    return res.status(400).send({ success: false, message: error  });
+  }
+
+});
+
+export const razorpayVendorPayout = asyncError(async (req, res) => {
+  const { fundAccountId, amount, currency = "INR", mode, purpose = "payout" } = req.body;
+  try {
+    const data = {
+      account_number: process.env.RAZORPAYX_ACCOUNT_NUMBER,
+      fund_account_id: fundAccountId,
+      amount,
+      currency,
+      mode,
+      purpose, // salary, refund, cashback, payout
+    };
+
+    const auth = {
+      username: process.env.RAZORPAYX_KEY_ID,
+      password: process.env.RAZORPAYX_KEY_SECRET
+    };
+
+    const payout = await axios.post('https://api.razorpay.com/v1/payouts', data, {
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      auth: auth
+    });
+    return res.status(200).json({ success: true, data: payout.data });
+  } catch (error) {
+    return res.status(200).json({ success: false, message: error.message });
   }
 });

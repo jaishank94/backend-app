@@ -57,7 +57,7 @@ export const getAdminOrders = asyncError(async (req, res, next) => {
     "tradeUser._id": req.user._id.toString(),
   }).populate("user");
 
-  res.status(200).json({
+  return res.status(200).json({
     success: true,
     orders,
   });
@@ -66,7 +66,7 @@ export const getAdminOrders = asyncError(async (req, res, next) => {
 export const getMyOrders = asyncError(async (req, res, next) => {
   const orders = await Order.find({ user: req.user._id });
 
-  res.status(200).json({
+  return res.status(200).json({
     success: true,
     orders,
   });
@@ -77,7 +77,7 @@ export const getOrderDetails = asyncError(async (req, res, next) => {
 
   if (!order) return next(new ErrorHandler("Order Not Found", 404));
 
-  res.status(200).json({
+  return res.status(200).json({
     success: true,
     order,
   });
@@ -95,7 +95,7 @@ export const proccessOrder = asyncError(async (req, res, next) => {
 
   await order.save();
 
-  res.status(200).json({
+  return res.status(200).json({
     success: true,
     message: "Order Processed Successfully",
   });
