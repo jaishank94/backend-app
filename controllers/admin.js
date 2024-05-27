@@ -3,6 +3,21 @@ import { User } from "../models/user.js";
 import { Product } from "../models/product.js";
 import { Order } from "../models/order.js";
 import { Payment } from "../models/payment.js";
+import { AnalyticsEvent } from "../models/analytics.js";
+
+
+
+export const getUserEvents = asyncError(async (req, res, next) => {
+  try {
+    const events = await AnalyticsEvent.find();
+    return res.status(200).json({
+      success: true,
+      data: events,
+    });
+  } catch (error) {
+    return next(new ErrorHandler("Something went wrong", 400));
+  }
+});
 
 export const updateUserRole = asyncError(async (req, res, next) => {
   try {

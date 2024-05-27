@@ -978,7 +978,7 @@ export const razorpayXGetFundByCustomerId = asyncError(async (req, res) => {
 
 });
 
-export const razorpayVendorPayout = asyncError(async (req, res) => {
+export const razorpayXVendorPayout = asyncError(async (req, res) => {
   const { fundAccountId, amount, currency = "INR", mode, purpose = "payout" } = req.body;
   try {
     const data = {

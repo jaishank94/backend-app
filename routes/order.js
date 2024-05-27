@@ -1,7 +1,7 @@
 import express from "express";
 import {
   createOrder,
-  getAdminOrders,
+  getVendorOrders,
   getMyOrders,
   getOrderDetails,
   proccessOrder,
@@ -13,8 +13,8 @@ const router = express.Router();
 
 router.post("/new", authenticationAndAnalyticsWrapped, createOrder);
 
-router.get("/my", authenticationAndAnalyticsWrapped, getMyOrders);
-router.get("/admin", isAuthenticated, getAdminOrders);
+router.get("/my", isAuthenticated, getMyOrders);
+router.get("/admin", isAuthenticated, getVendorOrders);
 
 router
   .route("/single/:id").get(isAuthenticated, getOrderDetails).put(authenticationAndAnalyticsWrapped, proccessOrder);

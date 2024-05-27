@@ -1,5 +1,6 @@
 import express from "express";
 import {
+  getUserEvents,
   updateUserRole,
   getAllUsers,
   updateUser,
@@ -17,7 +18,7 @@ import {
   createPayment
 } from "../controllers/admin.js";
 
-import { checkRole } from "../middlewares/auth.js";
+import { checkRole, isAuthenticated } from "../middlewares/auth.js";
 import { ROLES } from "../constants/index.js";
 import { authenticationAndAnalyticsWrapped } from "../middlewares/index.js";
 const { superadmin, admin } = ROLES;
@@ -30,6 +31,15 @@ router.put(
   [authenticationAndAnalyticsWrapped, checkRole(superadmin)], 
   updateUserRole
 );
+
+// Get analytics events
+router.get(
+  "/analytics",
+  [isAuthenticated, checkRole(admin)], 
+  getUserEvents
+)
+
+
 
 // Get all users
 router.get(

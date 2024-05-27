@@ -52,7 +52,7 @@ export const createOrder = asyncError(async (req, res, next) => {
   }
 });
 
-export const getAdminOrders = asyncError(async (req, res, next) => {
+export const getVendorOrders = asyncError(async (req, res, next) => {
   const orders = await Order.find({
     "tradeUser._id": req.user._id.toString(),
   }).populate("user");
