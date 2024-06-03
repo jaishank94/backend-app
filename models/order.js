@@ -86,8 +86,11 @@ const schema = new mongoose.Schema({
   },
   status: {
     type: String,
-    enum: ["CREATED", "EXECUTED", "CANCELLED"],
-    default: "CREATED",
+    enum: ["Preparing", "Cancelled", "Shipped", "Delivered"],
+    default: "Preparing",
+  },
+  deliveredAt: {
+    type: Date,
   },
   createdAt: {
     type: Date,
