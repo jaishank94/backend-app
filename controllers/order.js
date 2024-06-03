@@ -88,7 +88,7 @@ export const proccessOrder = asyncError(async (req, res, next) => {
   const { status } = req.body;
   if (!order) return next(new ErrorHandler("Order Not Found", 404));
   order.status = status;
-  if (status = "Delilvered") {
+  if (status === "Delivered") {
     order.deliveredAt = new Date(Date.now());
   }
 
