@@ -85,13 +85,12 @@ export const getOrderDetails = asyncError(async (req, res, next) => {
 
 export const proccessOrder = asyncError(async (req, res, next) => {
   const order = await Order.findById(req.params.id);
+  const { status } = req.body;
   if (!order) return next(new ErrorHandler("Order Not Found", 404));
-
-  if (order.status === "Preparing") order.status = "Shipped";
-  else if (order.status === "Shipped") {
-    order.status = "Delivered";
+  order.status = status;
+  if (status = "Delilvered") {
     order.deliveredAt = new Date(Date.now());
-  } else return next(new ErrorHandler("Order Already Delivered", 400));
+  }
 
   await order.save();
 
