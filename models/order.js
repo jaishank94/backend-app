@@ -87,7 +87,6 @@ const schema = new mongoose.Schema({
   status: {
     type: String,
     enum: ["Preparing", "Cancelled", "Shipped", "Delivered"],
-    default: "Preparing",
   },
   deliveredAt: {
     type: Date,

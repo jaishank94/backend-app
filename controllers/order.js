@@ -31,6 +31,7 @@ export const createOrder = asyncError(async (req, res, next) => {
       itemsPrice,
       // taxPrice,
       totalAmount,
+      status: "Preparing"
     });
   
     // for (let i = 0; i < orderItems.length; i++) {
