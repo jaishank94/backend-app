@@ -4,7 +4,7 @@ import {
   getVendorOrders,
   getMyOrders,
   getOrderDetails,
-  proccessOrder,
+  processOrder,
 } from "../controllers/order.js";
 import { isAuthenticated } from "../middlewares/auth.js";
 import { authenticationAndAnalyticsWrapped } from "../middlewares/index.js";
@@ -17,6 +17,6 @@ router.get("/my", isAuthenticated, getMyOrders);
 router.get("/admin", isAuthenticated, getVendorOrders);
 
 router
-  .route("/single/:id").get(isAuthenticated, getOrderDetails).put(authenticationAndAnalyticsWrapped, proccessOrder);
+  .route("/single/:id").get(isAuthenticated, getOrderDetails).put(authenticationAndAnalyticsWrapped, processOrder);
 
 export default router;

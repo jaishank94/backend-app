@@ -84,19 +84,25 @@ export const getOrderDetails = asyncError(async (req, res, next) => {
   });
 });
 
-export const proccessOrder = asyncError(async (req, res, next) => {
-  const order = await Order.findById(req.params.id);
+
+export const processOrder = asyncError(async (req, res, next) => {
   const { status } = req.body;
-  if (!order) return next(new ErrorHandler("Order Not Found", 404));
-  order.status = status;
-  if (status === "Delivered") {
-    order.deliveredAt = new Date(Date.now());
+  try {
+    if (status === "Delivered") {
+      await Order.findByIdAndUpdate(req.params.id, 
+        { $set: { status, deliveredAt: new Date(Date.now()) } });
+    } else {
+      await Order.findByIdAndUpdate(req.params.id, 
+        { $set: { status } });
+    }
+    return res.status(200).json({
+      success: true,
+      message: "Order Processed Successfully",
+    });
+  } catch (error) {
+    return res.status(400).json({
+      success: false,
+      message: error,
+    });
   }
-
-  await order.save();
-
-  return res.status(200).json({
-    success: true,
-    message: "Order Processed Successfully",
-  });
 });
