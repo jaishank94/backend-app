@@ -40,6 +40,7 @@ import categories from "./routes/category.js";
 import companycharge from "./routes/companycharge.js";
 import coupon from "./routes/coupon.js";
 import payment from "./routes/payment.js";
+import shipping from './routes/shipping.js';
 
 app.get("/test", (req, res) => {
   return res.json({
@@ -56,6 +57,7 @@ app.use("/api/v1/order", order);
 app.use("/api/v1/payment", payment);
 app.use("/api/v1/companycharges", companycharge);
 app.use("/api/v1/coupon", coupon);
+app.use("/api/v1/shipping", shipping);
 
 
 // Using Error Middleware

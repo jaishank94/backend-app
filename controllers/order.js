@@ -18,7 +18,7 @@ export const createOrder = asyncError(async (req, res, next) => {
       discount,
       totalAmount,
     } = req.body;
-
+  
     const order = await Order.create({
       user: req.user._id,
       tradeUser,
@@ -31,15 +31,15 @@ export const createOrder = asyncError(async (req, res, next) => {
       itemsPrice,
       // taxPrice,
       totalAmount,
-      status: "Preparing",
+      status: "Preparing"
     });
-
+  
     // for (let i = 0; i < orderItems.length; i++) {
     //   const product = await Product.findById(orderItems[i].product);
     //   product.stock -= orderItems[i].quantity;
     //   await product.save();
     // }
-
+  
     return res.status(201).json({
       success: true,
       message: "Trade Requested Successfully",
@@ -48,8 +48,8 @@ export const createOrder = asyncError(async (req, res, next) => {
   } catch (error) {
     return res.status(400).json({
       success: false,
-      message: error.message,
-    });
+      message: error.message
+    })
   }
 });
 
@@ -84,23 +84,17 @@ export const getOrderDetails = asyncError(async (req, res, next) => {
   });
 });
 
+
 export const processOrder = asyncError(async (req, res, next) => {
   const { status } = req.body;
   try {
-    console.log("h1", status);
     if (status === "Delivered") {
-      console.log("h12", status);
-
-      await Order.findByIdAndUpdate(req.params.id, {
-        $set: { status, deliveredAt: new Date(Date.now()) },
-      });
+      await Order.findByIdAndUpdate(req.params.id, 
+        { $set: { status, deliveredAt: new Date(Date.now()) } });
     } else {
-      console.log("h123", status);
-
-      await Order.findByIdAndUpdate(req.params.id, { $set: { status } });
+      await Order.findByIdAndUpdate(req.params.id, 
+        { $set: { status } });
     }
-    console.log("h1234", status);
-
     return res.status(200).json({
       success: true,
       message: "Order Processed Successfully",

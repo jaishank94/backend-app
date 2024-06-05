@@ -989,7 +989,6 @@ export const razorpayXGetFundByCustomerId = asyncError(async (req, res) => {
     customers.data.faAcc = customerFA;
     return res.status(200).send({ success: true, data: customers.data });
   } catch (error) {
-    console.log(error);
     return res.status(400).send({ success: false, message: error  });
   }
 
@@ -1016,6 +1015,37 @@ export const razorpayXVendorPayout = asyncError(async (req, res) => {
       headers: {
         'Content-Type': 'application/json'
       },
+      auth: auth
+    });
+    return res.status(200).json({ success: true, data: payout.data });
+  } catch (error) {
+    return res.status(200).json({ success: false, message: error.message });
+  }
+});
+
+export const razorpayXFetchVendorPayout = asyncError(async (req, res) => {
+  try {
+    const auth = {
+      username: process.env.RAZORPAYX_KEY_ID,
+      password: process.env.RAZORPAYX_KEY_SECRET
+    };
+    const payout = await axios.get(`${process.env.RAZORPAYX_KEY_API_URL}/payouts?account_number=${process.env.RAZORPAYX_ACCOUNT_NUMBER}`, {
+      auth: auth
+    });
+    return res.status(200).json({ success: true, data: payout.data.items });
+  } catch (error) {
+    return res.status(200).json({ success: false, message: error.message });
+  }
+});
+
+export const razorpayXFetchVendorPayoutById = asyncError(async (req, res) => {
+  const { payoutId } = req.params;
+  try {
+    const auth = {
+      username: process.env.RAZORPAYX_KEY_ID,
+      password: process.env.RAZORPAYX_KEY_SECRET
+    };
+    const payout = await axios.get(`${process.env.RAZORPAYX_KEY_API_URL}/payouts/${payoutId}`, {
       auth: auth
     });
     return res.status(200).json({ success: true, data: payout.data });

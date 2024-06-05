@@ -33,7 +33,10 @@ import {
   razorpayXGetFundAccount,
   razorpayXGetFundByCustomerId,
   razorpayXVendorPayout,
+  razorpayXFetchVendorPayout,
+  razorpayXFetchVendorPayoutById,
 } from "../controllers/payment.js";
+
 import { checkRole, isAuthenticated } from "../middlewares/auth.js";
 
 import { ROLES } from "../constants/index.js";
@@ -74,8 +77,7 @@ router.post('/razorpay/x/fundAccount', [isAuthenticated, checkRole(admin)], razo
 router.get('/razorpay/x/fundAccount', [isAuthenticated, checkRole(admin)], razorpayXGetFundAccount);
 router.get('/razorpay/x/customer/:customerId/fundAccount', [isAuthenticated, checkRole(admin)], razorpayXGetFundByCustomerId);
 router.post('/razorpay/x/payout', [isAuthenticated, checkRole(admin)], razorpayXVendorPayout);
-
-
-
+router.get('/razorpay/x/payout', [isAuthenticated, checkRole(admin)], razorpayXFetchVendorPayout);
+router.get('/razorpay/x/payout/:payoutId', [isAuthenticated, checkRole(admin)], razorpayXFetchVendorPayoutById);
 
 export default router;

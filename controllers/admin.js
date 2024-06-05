@@ -9,7 +9,7 @@ import { AnalyticsEvent } from "../models/analytics.js";
 
 export const getUserEvents = asyncError(async (req, res, next) => {
   try {
-    const events = await AnalyticsEvent.find();
+    const events = await AnalyticsEvent.find().populate('userId').exec();
     return res.status(200).json({
       success: true,
       data: events,

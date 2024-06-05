@@ -2,7 +2,7 @@ import mongoose from "mongoose";
 
 const analyticsSchema = new mongoose.Schema({
   eventType: String,
-  userId: String,
+  userId: { type: String, ref: 'User' },
   timestamp: { type: Date, default: Date.now },
   properties: Object
 });
