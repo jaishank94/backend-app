@@ -157,6 +157,8 @@ export const changePassword = asyncError(async (req, res, next) => {
 
   if (!isMatched) return next(new ErrorHandler("Incorrect Old Password", 400));
 
+  if (newPassword === oldPassword) return next(new ErrorHandler("New password and old password cannot be same. Please use a different password", 400));
+  
   user.password = newPassword;
   await user.save();
 

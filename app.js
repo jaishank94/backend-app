@@ -41,6 +41,9 @@ import companycharge from "./routes/companycharge.js";
 import coupon from "./routes/coupon.js";
 import payment from "./routes/payment.js";
 import shipping from './routes/shipping.js';
+import message from './routes/message.js';
+import termsAndConditions from './routes/t&c.js';
+import privacyPolicy from './routes/privacyPolicy.js';
 
 app.get("/test", (req, res) => {
   return res.json({
@@ -58,6 +61,9 @@ app.use("/api/v1/payment", payment);
 app.use("/api/v1/companycharges", companycharge);
 app.use("/api/v1/coupon", coupon);
 app.use("/api/v1/shipping", shipping);
+app.use("/api/v1/message", message);
+app.use("/api/v1/t&c", termsAndConditions);
+app.use("/api/v1/privacy", privacyPolicy);
 
 
 // Using Error Middleware

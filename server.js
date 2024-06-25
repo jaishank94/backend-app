@@ -3,7 +3,34 @@ import { connectDB } from "./data/database.js";
 import cloudinary from "cloudinary";
 import Stripe from "stripe";
 import Razorpay from "razorpay";
-import { Cashfree } from "cashfree-pg"; 
+import { Server } from 'socket.io';
+import http from 'http';
+import { Message } from "./models/message.js";
+const server = http.createServer(app);
+const io = new Server(server);
+
+io.on('connection', (socket) => {
+  Message.find().sort({ timestamp: 1 }).limit(100).exec((err, messages) => {
+    if (err) throw err;
+    socket.emit('initialMessages', messages);
+  });
+ 
+  socket.on('sendMessage', (data) => {
+    const newMessage = new Message({
+      userId: data.userId,
+      message: data.message,
+    });
+
+    newMessage.save((err) => {
+      if (err) throw err;
+      io.emit('newMessage', newMessage);
+    });
+  });
+
+  socket.on('disconnect', () => {
+    console.log('A user disconnected');
+  });
+});
 
 connectDB();
 
@@ -13,11 +40,6 @@ export const razorpay = new Razorpay({
 });
 
 export const stripe = new Stripe(process.env.STRIPE_API_SECRET);
-
-Cashfree.XClientId = process.env.CASHFREE_APPID;
-Cashfree.XClientSecret = process.env.CASHFREE_SECRET_KEY;
-Cashfree.XEnvironment = Cashfree.Environment.SANDBOX;
-export const cashfree = Cashfree;
 
 cloudinary.v2.config({
   cloud_name: process.env.CLOUDINARY_NAME,
